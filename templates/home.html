@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .container {
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #fileUpload {
+            display: none; 
+        }
+        .custom-file-upload {
+            border: none;
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #0056b3;
+            color: #fff;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .custom-file-upload:hover {
+            background-color: #003d7a;
+        }
+        .custom-file-upload:active {
+            background-color: #002b52;
+        }
+        .container > button {
+            margin-bottom: 10px;
+            background-color: transparent;
+            color: #007bff;
+            border: 2px solid black;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .container > button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .From {
+            margin-top: 20px; 
+            margin-bottom: 20px; 
+            padding-top: 10px; 
+            padding-bottom: 10px; 
+        }
+        .From label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        #email {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .From, .To { 
+            margin-bottom: 20px;
+        }
+        .From label, .To label { 
+            font-weight: bold;
+            margin-right: 10px;
+            display: block;
+        }
+        #email, #to { 
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+        }
+        #recipientEmails {
+            width: 200px; 
+            height: 40px; 
+            resize: both; 
+            overflow: auto;
+        }
+        #templateSelector {
+            margin-bottom: 20px;
+        }
+        #templateSelector label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: block;
+        }
+        #templateSelect {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+        }
+        #templates {
+            margin-bottom: 20px;
+        }
+        .template {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            height: 400px;
+            overflow: auto; 
+        }
+        .template.active {
+            display: block;
+        }
+        #submitBtn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #submitBtn:hover {
+            background-color: #0056b3;
+        }
+        #submitBtn:active {
+            background-color: #003d7a;
+        }
+        .selected-files-container {
+            margin-bottom: 10px;
+        }
+        .selected-file {
+            margin-bottom: 5px;
+        }
+        .remove-file {
+            color: #FF0000;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        #emailError,
+        #recipientEmailsError {
+            color: #FF0000;
+            margin-top: 5px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .Subject {
+            margin-bottom: 20px;
+        }
+
+        .Subject label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: block;
+        }
+
+        #subject {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width:400px;
+            max-width: 500px;
+            min-height: 20px; 
+            resize: both;
+            overflow:auto; 
+        }    
+
+        .signature {
+            margin-top: 20px;
+        }
+
+        .signature textarea {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+            min-height: 100px; 
+            resize: both; 
+            overflow: auto; 
+        }
+
+        .container button a {
+            text-decoration: none;
+            color: black;
+            margin-bottom: 10px;
+        }
+    
+    </style>
+</head>
+<body>
+<header>
+    <h1>Bulk Email</h1>
+    <a href="/" id="logout">Logout</a>
+</header>
+<div class="container">
+    <button id="chooseGroupBtn"><a href="/chooseExistedGroups">Choose Group</a></button>
+    <button id = "chooseRecipientBtn"><a href="/chooseRecipientList">Choose Recipient list</a></button>
+    <button><a href="/sentEmails">Sent Mails</a></button>
+    <button><a href="/seeGroups">See Groups</a></button>
+    <button><a href="/seeRecipientList">See Recipient List</a></button>
+    <div class="From">
+        <label for="email">From address:</label>
+        {{ usermailid }}
+    </div>
+    <br>
+    <form action="/send_email" method="POST">
+
+        <br>
+<div class="To">
+            <label for="to">To address:</label>
+            <!-- <input type="email" id="to" name="to" required> -->
+            <input type="hidden" id="recipients" name="recipients" value="{% if selected_groups %}{{ selected_groups|join(',') }}{% endif %}{% if selected_groups and selected_recipients %},{% endif %}{% if selected_recipients %}{{ selected_recipients|join(',') }}{% endif %}">
+            {% if selected_groups is not none %}
+            {% for selected_group in selected_groups %}
+                {{ selected_group }}
+            {%  endfor %}
+            {% endif %}
+    
+            {% if selected_recipients is not none %}
+            {% for selected_recipient in selected_recipients %}
+                {{ selected_recipient }}
+            {%          endfor %}
+            {% endif %}
+        </div>
+        <div class="Subject">
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required>
+        </div>
+        <div id="templateSelector">
+            <label for="templateSelect">Select Template:</label>
+            <select id="templateSelect" name="template">
+                <option value="select your template">Select your template</option>
+                <option value="template1">Same email</option>
+                <option value="template2">Individual email</option>
+            </select>
+        </div>
+             <div class="Content">
+                <label for="content">Content:</label>
+                <br>
+                <textarea style="width: 400px;" name="content" placeholder="Write your content here." required></textarea>
+            </div>
+             <br>
+        <button type="submit" value="send" id="submitBtn">Send</button>
+    </form>
+</div>
+
+<script>
+
+    var selectedFilesList = [];
+
+    document.getElementById('fileUpload').addEventListener('change', function () {
+    var files = this.files;
+    var selectedFilesContainer = document.getElementById('selectedFiles');
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        if (!selectedFilesList.includes(file.name)) {
+            selectedFilesList.push(file.name);
+            var fileName = document.createElement('div');
+            fileName.textContent = file.name;
+            fileName.classList.add('selected-file');
+            var removeBtn = document.createElement('span');
+            removeBtn.textContent = 'Remove';
+            removeBtn.classList.add('remove-file');
+            removeBtn.addEventListener('click', function () {
+                var fileName = this.parentNode.textContent;
+                var index = selectedFilesList.indexOf(fileName);
+                if (index !== -1) {
+                    selectedFilesList.splice(index, 1);
+                }
+                this.parentNode.remove(); 
+            });
+            fileName.appendChild(removeBtn);
+            selectedFilesContainer.appendChild(fileName);
+        }
+    }
+
+    var clickHereButton = document.createElement('button');
+    clickHereButton.textContent = 'Click here';
+    clickHereButton.addEventListener('click', function() {
+        window.location.href = 'clickhere.html'; 
+    });
+    selectedFilesContainer.appendChild(clickHereButton);
+});
+
+    document.getElementById('logout').addEventListener('click', function () {
+        alert('Logged out');
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        var email = document.getElementById('email').value.trim();
+        var recipientEmails = document.getElementById('to').value.trim(); // Changed to 'to'
+        var combinedRecipients = '';
+
+        if (email !== '') {
+            combinedRecipients += email;
+        }
+
+        if (recipientEmails !== '') {
+            if (combinedRecipients !== '') {
+                combinedRecipients += ', ';
+            }
+            combinedRecipients += recipientEmails;
+        }
+
+        var signature = '';
+        var template = document.querySelector('.template.active'); 
+        var signatureInput = template.querySelector('.signature textarea'); 
+
+        if (signatureInput) {
+            signature = signatureInput.value.trim(); 
+        }
+
+        console.log('Combined Recipients:', combinedRecipients);
+        console.log('Signature:', signature);
+
+    });
+
+    function validateEmails(emails) {
+        var emailArray = emails.split(',');
+        var invalidEmails = [];
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        emailArray.forEach(function (email) {
+            if (!emailRegex.test(email.trim())) {
+                invalidEmails.push(email.trim());
+            }
+        });
+
+        return invalidEmails;
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        var recipientEmails = document.getElementById('to').value.trim(); 
+        var invalidEmails = validateEmails(recipientEmails);
+
+        var recipientEmailsError = document.getElementById('recipientEmailsError');
+        if (invalidEmails.length > 0) {
+            recipientEmailsError.textContent = 'Invalid email(s): ' + invalidEmails.join(', ');
+        } else {
+            recipientEmailsError.textContent = '';
+        }
+    });
+
+    var subjectInput = document.getElementById('subject');
+    subjectInput.addEventListener('input', function () {
+        this.style.height = 'auto'; 
+        this.style.height = (this.scrollHeight) + 'px'; 
+    });
+
+    var signatureInput1 = document.getElementById('signature1');
+    var signatureInput2 = document.getElementById('signature2');
+
+    function adjustSignatureInputHeight(input) {
+        input.style.height = 'auto';
+        input.style.height = (input.scrollHeight) + 'px'; 
+    }
+
+    if (signatureInput1) {
+        signatureInput1.addEventListener('input', function () {
+            adjustSignatureInputHeight(this);
+        });
+    }
+
+    if (signatureInput2) {
+        signatureInput2.addEventListener('input', function () {
+            adjustSignatureInputHeight(this);
+        });
+    }
+
+    document.getElementById('chooseGroupBtn').addEventListener('click', function () {
+        fetch('/chooseExistedGroups')
+            .then(response => response.json())
+            .then(groups => {
+                console.log('Data received from server:', groups); 
+    
+                const groupEmail = groups[0][2]; 
+                console.log('Group email to be appended:', groupEmail); 
+                
+                const toField = document.getElementById('to');
+                
+                if (toField.value.trim() !== '') {
+                    toField.value += ', ' + groupEmail;
+                } else {
+                    toField.value = groupEmail;
+                }
+            })
+            .catch(error => console.error('Error fetching groups:', error));
+    });
+    
+    document.getElementById('chooseRecipientBtn').addEventListener('click', function () {
+
+        fetch('/chooseRecipientList')
+            .then(response => response.json())
+            .then(recipients => {
+                console.log('Data received from server:', recipients); 
+
+                const recipientEmail = recipients[0].email; 
+                console.log('Recipient email to be appended:', recipientEmail); 
+                const toField = document.getElementById('to');
+                
+                if (toField.value.trim() !== '') {
+                    toField.value += ', ' + recipientEmail;
+                } else {
+                    toField.value = recipientEmail;
+                }
+            })
+            .catch(error => console.error('Error fetching recipients:', error));
+    });
+    
+    function sendmailtest(){
+
+    }
+
+    function sendmail() {
+        var subject = document.getElementById("subject").value;
+        var message = document.getElementById("content").value; 
+        var to = getEmailAddresses(); 
+    
+        fetch('/send_email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to: to,
+                subject: subject,
+                message: message
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            alert(data.message);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+
+    function getEmailAddresses() {
+        var emailAddresses = [];
+        var selectedGroups = document.getElementsByClassName("To");
+        for (var i = 0; i < selectedGroups.length; i++) {
+            var email = selectedGroups[i];
+            emailAddresses.push(email);
+        }
+        return emailAddresses;
+    }
+    
+</script>
+</body>
+</html>

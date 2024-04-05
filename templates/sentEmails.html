@@ -1,0 +1,72 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Sent Emails</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #sentEmailTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #sentEmailTable th, #sentEmailTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #sentEmailTable th {
+            background-color: #3F51B5;
+            color: white; 
+        }
+        #sentEmailTable tr:hover {
+            background-color: #E8EAF6; 
+            cursor: pointer; 
+        }
+        #emailWindow {
+            background-color: #2196F3; 
+            color: white; 
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sent Emails</h1>
+    <table id="sentEmailTable">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>From Address</th>
+                <th>To Addresses</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for email in emails %}
+            <tr onclick="openEmail('{{ email[1] }}', '{{ email[2] }}')">
+                <td><input type = "checkbox" class = "emailcheckbox"> </td>
+                <td>{{usermailid}}</td>
+                <td>{{ email[5] }}, {{ email[6] }}</td>
+                <td>{{ email[1] }}</td>
+                <td>{{ email[4] }}</td>
+                <td>{{ email[3] }}</td>
+                <td style="display: none;">{{ email[2] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script>
+        function openEmail(subject, content) {
+            var emailWindow = window.open("", "EmailWindow", "width=400,height=400");
+            emailWindow.document.write("<div id='emailWindow'>");
+            emailWindow.document.write("<h2>Email Subject: " + subject + "</h2>");
+            emailWindow.document.write("<p>" + content + "</p>");
+            emailWindow.document.write("</div>");
+        }
+
+    </script>
+</body>
+</html>  

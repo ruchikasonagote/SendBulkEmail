@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Details</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  th, td {
+    border: 1px solid #4564b2;
+    padding: 12px;
+    text-align: left;
+  }
+  th {
+    background-color: #007bff;
+    color: white;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  .group-details {
+    display: none;
+  }
+  .group-details table {
+    margin-top: 10px;
+    width: 98%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fafafa;
+  }
+  .group-details th, .group-details td {
+    font-size: 0.9em;
+    border: none;
+  }
+  tr.group-row:hover {
+    background-color: #e8f4ff;
+    cursor: pointer;
+  }
+  tr.group-row td {
+    font-weight: bold;
+  }
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+
+<table>
+  <thead>
+    <tr>
+      <th>Select</th>  
+      <th>Group ID</th>
+      <th>Group Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for group in groups %}
+    <tr class="group-row" onclick="toggleGroupDetails('{{ group[0] }}')"> 
+        <td><input type="checkbox" class="group-checkbox" value="{{ group[0] }}"></td>
+        <td>{{ group[0] }}</td>
+        <td>{{ group[1] }}</td>
+    </tr>
+  
+<tr class="group-details" id="group-details-{{ group[0] }}" style="display: none;">
+    <td colspan="3"> 
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th> 
+            <th>Recipient ID</th>
+            <th>Recipient Email</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detail in group_details[group[0]] %}
+          <tr>
+            <td><input type="checkbox" class="recipient-checkbox" value="{{ detail[0] }}"></td> <!-- Checkbox for each recipient -->
+            <td>{{ detail[0] }}</td>
+            <td>{{ detail[1] }}</td>
+            <td>{{ detail[2] }}</td>
+            <td>{{ detail[3] }}</td>
+            <td>{{ detail[4] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button onclick="DeleteRecipientLists()">Delete_RL</button>
+      <button onclick="RenameRecipientLists()">Rename_RL</button>
+      <button class="insert-recipient-btn">Insert_RL</button>
+    </td>
+  </tr>
+  
+    {% endfor %}
+  </tbody>
+</table>
+
+<div style="text-align: center; margin-top: 20px;">
+    <button onclick="deleteGroups()">Delete</button>
+    <button onclick="renameGroup()">Rename</button>
+    <button onclick="insertGroup()" id="insertGroupBtn">Insert</button>
+</div>
+
+</body>
+
+    <script>      
+        function getSelectedGroups() {
+            const checkboxes = document.querySelectorAll('.group-checkbox:checked');
+            let ids = [];
+            checkboxes.forEach((checkbox) => {
+                ids.push(checkbox.value);
+            });
+            return ids;
+        }
+        document.getElementById('insertGroupBtn').addEventListener('click', function() {
+          window.location.href = '/insertGroup';
+        });
+        function renameGroup() {
+            const selectedGroups = getSelectedGroups();
+            if (selectedGroups.length !== 1) {
+                alert('Please select exactly one group to rename.');
+                return;
+            }
+            const newName = prompt('Enter new name for the group:');
+            if (newName) {
+                fetch('/rename-group', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ group_id: selectedGroups[0], new_name: newName }),
+                }).then(response => response.json())
+                  .then(data => {
+                    if(data.success) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function RenameRecipientLists() {
+          const selectedRecipients = getSelectedRecipients();
+          if (selectedRecipients.length !== 1) {
+              alert('Please select exactly one recipient to rename.');
+              return;
+          }
+          const newName = prompt('Enter new name for the recipient:');
+          if (newName) {
+              fetch('/rename-recipient', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ recipient_id: selectedRecipients[0], new_name: newName }),
+              }).then(response => response.json())
+                .then(data => {
+                  if(data.success) {
+                      window.location.reload();
+                  }
+              });
+          }
+      }
+
+      function deleteGroups() {
+          const selectedGroups = getSelectedGroups();
+          fetch('/delete-groups', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ group_ids: selectedGroups }),
+          }).then(response => response.json())
+            .then(data => {
+              if(data.success) {
+                  window.location.reload();
+              }
+          });
+      }
+
+      function DeleteRecipientLists() {
+        const selectedRecipients = getSelectedRecipients();
+        fetch('/delete-recipients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ recipient_ids: selectedRecipients }),
+        }).then(response => response.json())
+          .then(data => {
+            if(data.success) {
+                window.location.reload();
+            }
+        });
+    }
+
+    function getSelectedRecipients() {
+      const checkboxes = document.querySelectorAll('.recipient-checkbox:checked');
+      let ids = [];
+      checkboxes.forEach((checkbox) => {
+          ids.push(checkbox.value);
+      });
+      return ids;
+  }
+
+let selectedGroupID = null;
+
+function toggleGroupDetails(groupId) {
+    selectedGroupID = groupId;
+    const details = document.getElementById('group-details-' + groupId);
+    details.style.display = details.style.display === 'none' ? 'table-row' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const insertButtons = document.querySelectorAll('.insert-recipient-btn');
+
+    insertButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (selectedGroupID) {
+                window.location.href = '/insertRecipient_RL?group_id=' + selectedGroupID;
+            } else {
+                alert("Please select a group first.");
+            }
+        });
+    });
+});
+// </script>
+
+
+    </script>
+    
+</html>
